@@ -69,6 +69,9 @@ def ussd():
         NO_RECORD = "No record found for the provided details."
 
         if new_session:
+            # ✅ Reset any old session state before starting new one
+            cache_data[hash(session_id)] = []
+
             # Step 0 - Main menu
             response['message'] = WELCOME_MENU
             response['continueSession'] = True
@@ -85,8 +88,8 @@ def ussd():
                 new_session=True
             )
             
-            user_response_tracker = cache_data.get(hash(session_id), [])
-            user_response_tracker.append(current_state)
+            # Start a fresh response tracker for this session
+            user_response_tracker = [current_state]
             cache_data[hash(session_id)] = user_response_tracker
             
         else:
@@ -140,9 +143,9 @@ def ussd():
                 elif last_response.step == 3:  # After year selection
                     # Process the complete request
                     if len(user_inputs) >= 5:
-                        index = user_inputs[2]  # Skip '*928*230#' and '1'
-                        password = user_inputs[3]  # Skip '*928*230#' and '1'
-                        year_choice = user_inputs[4]  # Skip '*928*230#' and '1'
+                        index = user_inputs[2]  # Skip '*124#' and '1'
+                        password = user_inputs[3]  
+                        year_choice = user_inputs[4]  
                         
                         logging.info(f"Attempting authentication - Index: '{index}', Password: '{password}'")
                         
@@ -243,3 +246,4 @@ def ussd():
 
 if __name__ == '__main__':
     app.run(debug=True, port=5001)
+
